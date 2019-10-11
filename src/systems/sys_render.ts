@@ -1,0 +1,30 @@
+import {Get} from "../components/com_index.js";
+import {RenderKind, RenderRect} from "../components/com_render.js";
+import {Transform} from "../components/com_transform.js";
+import {Game} from "../game.js";
+
+const QUERY = Get.Transform | Get.Render;
+
+export function sys_render(game: Game, delta: number) {
+    game.Context.resetTransform();
+    game.Context.clearRect(0, 0, game.Canvas.width, game.Canvas.height);
+
+    for (let i = 0; i < game.World.length; i++) {
+        if ((game.World[i] & QUERY) === QUERY) {
+            let transform = game[Get.Transform][i];
+            let render = game[Get.Render][i];
+
+            switch (render.Kind) {
+                case RenderKind.Rect:
+                    draw_rect(game, transform, render);
+                    break;
+            }
+        }
+    }
+}
+
+function draw_rect(game: Game, transform: Transform, render: RenderRect) {
+    game.Context.setTransform(...transform.World);
+    game.Context.fillStyle = render.Color;
+    game.Context.fillRect(0, 0, render.Width, render.Height);
+}
