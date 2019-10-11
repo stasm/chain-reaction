@@ -1,17 +1,18 @@
 import {move} from "../components/com_move.js";
-import {render_circle, render_rect} from "../components/com_render.js";
+import {render_circle} from "../components/com_render.js";
 import {Game} from "../game.js";
+import {float, integer} from "../math/random.js";
 
 export function world_stage(game: Game) {
     game.World = [];
 
-    game.Add({
-        Translation: [100, 100],
-        Using: [render_rect(100, 50, "red", 0.3)],
-    });
-
-    game.Add({
-        Translation: [200, 175],
-        Using: [render_circle(50, "blue", 0.3), move(1, 100)],
-    });
+    for (let i = 0; i < 10; i++) {
+        game.Add({
+            Translation: [integer(1, game.Canvas.width - 1), integer(1, game.Canvas.height - 1)],
+            Using: [
+                render_circle(10, `hsl(${integer(0, 359)}, 90%, 60%)`, 0.5),
+                move(float(0, 2 * Math.PI), 200),
+            ],
+        });
+    }
 }
