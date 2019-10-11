@@ -29,12 +29,16 @@ export function sys_render(game: Game, delta: number) {
 function draw_rect(game: Game, transform: Transform, render: RenderRect) {
     game.Context.setTransform(...transform.World);
     game.Context.fillStyle = render.Color;
+    game.Context.globalAlpha = render.Alpha;
+
     game.Context.fillRect(0, 0, render.Width, render.Height);
 }
 
 function draw_circle(game: Game, transform: Transform, render: RenderCircle) {
     game.Context.setTransform(...transform.World);
     game.Context.fillStyle = render.Color;
+    game.Context.globalAlpha = render.Alpha;
+
     game.Context.beginPath();
     game.Context.arc(0, 0, render.Radius, 0, 2 * Math.PI);
     game.Context.closePath();
