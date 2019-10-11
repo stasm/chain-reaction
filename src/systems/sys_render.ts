@@ -1,5 +1,5 @@
 import {Get} from "../components/com_index.js";
-import {RenderKind, RenderRect} from "../components/com_render.js";
+import {RenderCircle, RenderKind, RenderRect} from "../components/com_render.js";
 import {Transform} from "../components/com_transform.js";
 import {Game} from "../game.js";
 
@@ -18,6 +18,9 @@ export function sys_render(game: Game, delta: number) {
                 case RenderKind.Rect:
                     draw_rect(game, transform, render);
                     break;
+                case RenderKind.Circle:
+                    draw_circle(game, transform, render);
+                    break;
             }
         }
     }
@@ -27,4 +30,13 @@ function draw_rect(game: Game, transform: Transform, render: RenderRect) {
     game.Context.setTransform(...transform.World);
     game.Context.fillStyle = render.Color;
     game.Context.fillRect(0, 0, render.Width, render.Height);
+}
+
+function draw_circle(game: Game, transform: Transform, render: RenderCircle) {
+    game.Context.setTransform(...transform.World);
+    game.Context.fillStyle = render.Color;
+    game.Context.beginPath();
+    game.Context.arc(0, 0, render.Radius, 0, 2 * Math.PI);
+    game.Context.closePath();
+    game.Context.fill();
 }
