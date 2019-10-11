@@ -3,17 +3,17 @@ import {Vec2} from "../math/index.js";
 import {Get} from "./com_index.js";
 
 export interface Move {
+    Direction: Vec2;
     /** Units per second. */
-    readonly Speed: number;
-    Directions: Array<Vec2>;
+    Speed: number;
 }
 
-export function move(Speed: number = 3.5) {
+export function move(angle: number, Speed: number) {
     return (game: Game, entity: Entity) => {
-        game.World[entity] |= 1 << Get.Move;
+        game.World[entity] |= Get.Move;
         game[Get.Move][entity] = <Move>{
+            Direction: <Vec2>[Math.cos(angle), Math.sin(angle)],
             Speed,
-            Directions: [],
         };
     };
 }
