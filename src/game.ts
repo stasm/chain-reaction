@@ -1,10 +1,12 @@
 import {GameState} from "./actions.js";
 import {Blueprint} from "./blueprints/blu_common.js";
 import {ComponentData, Get} from "./components/com_index.js";
+import {Lifespan} from "./components/com_lifespan.js";
 import {Move} from "./components/com_move.js";
 import {Render} from "./components/com_render.js";
 import {transform, Transform} from "./components/com_transform.js";
 import {sys_framerate} from "./systems/sys_framerate.js";
+import {sys_lifespan} from "./systems/sys_lifespan.js";
 import {sys_move} from "./systems/sys_move.js";
 import {sys_performance} from "./systems/sys_performance.js";
 import {sys_render} from "./systems/sys_render.js";
@@ -31,6 +33,7 @@ export class Game implements ComponentData, GameState {
     public World: Array<number> = [];
 
     // Implement ComponentData
+    public [Get.Lifespan]: Array<Lifespan> = [];
     public [Get.Move]: Array<Move> = [];
     public [Get.Render]: Array<Render> = [];
     public [Get.Transform]: Array<Transform> = [];
@@ -88,6 +91,7 @@ export class Game implements ComponentData, GameState {
     Update(delta: number) {
         let now = performance.now();
 
+        sys_lifespan(this, delta);
         sys_move(this, delta);
         sys_transform(this, delta);
         sys_render(this, delta);
