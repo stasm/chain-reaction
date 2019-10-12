@@ -1,4 +1,5 @@
 import {Collide} from "./com_collide";
+import {ControlBall} from "./com_control_ball";
 import {Grow} from "./com_grow";
 import {Lifespan} from "./com_lifespan";
 import {Move} from "./com_move";
@@ -7,15 +8,17 @@ import {Transform} from "./com_transform";
 
 export const enum Get {
     Collide = 1,
-    Grow = 2,
-    Lifespan = 4,
-    Move = 8,
-    Render = 16,
-    Transform = 32,
+    ControlBall = 2,
+    Grow = 4,
+    Lifespan = 8,
+    Move = 16,
+    Render = 32,
+    Transform = 64,
 }
 
 export interface ComponentData {
     [Get.Collide]: Array<Collide>;
+    [Get.ControlBall]: Array<ControlBall>;
     [Get.Grow]: Array<Grow>;
     [Get.Lifespan]: Array<Lifespan>;
     [Get.Move]: Array<Move>;

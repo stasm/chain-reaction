@@ -18,12 +18,4 @@ function update(game: Game, entity: Entity, delta: number) {
     transform.Translation[0] += move.Direction[0] * move.Speed * delta;
     transform.Translation[1] += move.Direction[1] * move.Speed * delta;
     transform.Dirty = true;
-
-    if (transform.Translation[0] < 0 || transform.Translation[0] > game.Canvas.width) {
-        move.Direction[0] = -move.Direction[0];
-    }
-
-    if (transform.Translation[1] < 0 || transform.Translation[1] > game.Canvas.height) {
-        move.Direction[1] = -move.Direction[1];
-    }
 }

@@ -1,6 +1,7 @@
 import {GameState} from "./actions.js";
 import {Blueprint} from "./blueprints/blu_common.js";
 import {Collide} from "./components/com_collide.js";
+import {ControlBall} from "./components/com_control_ball.js";
 import {Grow} from "./components/com_grow.js";
 import {ComponentData, Get} from "./components/com_index.js";
 import {Lifespan} from "./components/com_lifespan.js";
@@ -8,6 +9,7 @@ import {Move} from "./components/com_move.js";
 import {Render} from "./components/com_render.js";
 import {transform, Transform} from "./components/com_transform.js";
 import {sys_collide} from "./systems/sys_collide.js";
+import {sys_control_ball} from "./systems/sys_control_ball.js";
 import {sys_control_placement} from "./systems/sys_control_placement.js";
 import {sys_framerate} from "./systems/sys_framerate.js";
 import {sys_grow} from "./systems/sys_grow.js";
@@ -39,6 +41,7 @@ export class Game implements ComponentData, GameState {
 
     // Implement ComponentData
     public [Get.Collide]: Array<Collide> = [];
+    public [Get.ControlBall]: Array<ControlBall> = [];
     public [Get.Grow]: Array<Grow> = [];
     public [Get.Lifespan]: Array<Lifespan> = [];
     public [Get.Move]: Array<Move> = [];
@@ -99,6 +102,7 @@ export class Game implements ComponentData, GameState {
         let now = performance.now();
 
         sys_control_placement(this, delta);
+        sys_control_ball(this, delta);
         sys_lifespan(this, delta);
         sys_move(this, delta);
         sys_transform(this, delta);
