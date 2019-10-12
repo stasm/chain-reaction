@@ -1,14 +1,13 @@
 {
-    "name": "goodluck",
+    "name": "@stasm/chain-reaction",
     "version": "0.0.1",
-    "description": "A template for creating small and fast browser games",
+    "description": "Chain explosions to clear the screen",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/piesku/goodluck.git"
+        "url": "git+https://github.com/stasm/chain-reaction.git"
     },
     "contributors": [
-        "Staś Małolepszy <stas@piesku.com>",
-        "Michał Budzyński <michal@virtualdesign.pl>"
+        "Staś Małolepszy <stas@piesku.com>"
     ],
     "license": "ISC",
     "scripts": {
