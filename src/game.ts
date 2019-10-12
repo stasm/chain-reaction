@@ -1,7 +1,6 @@
 import {GameState} from "./actions.js";
 import {Blueprint} from "./blueprints/blu_common.js";
 import {Collide} from "./components/com_collide.js";
-import {ControlBall} from "./components/com_control_ball.js";
 import {Grow} from "./components/com_grow.js";
 import {ComponentData, Get} from "./components/com_index.js";
 import {Lifespan} from "./components/com_lifespan.js";
@@ -41,7 +40,6 @@ export class Game implements ComponentData, GameState {
 
     // Implement ComponentData
     public [Get.Collide]: Array<Collide> = [];
-    public [Get.ControlBall]: Array<ControlBall> = [];
     public [Get.Grow]: Array<Grow> = [];
     public [Get.Lifespan]: Array<Lifespan> = [];
     public [Get.Move]: Array<Move> = [];

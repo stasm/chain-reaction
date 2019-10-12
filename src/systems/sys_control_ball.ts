@@ -3,7 +3,7 @@ import {Get} from "../components/com_index.js";
 import {lifespan} from "../components/com_lifespan.js";
 import {Entity, Game} from "../game.js";
 
-const QUERY = Get.Transform | Get.ControlBall | Get.Move | Get.Collide;
+const QUERY = Get.Transform | Get.Move | Get.Collide;
 
 export function sys_control_ball(game: Game, delta: number) {
     for (let i = 0; i < game.World.length; i++) {
