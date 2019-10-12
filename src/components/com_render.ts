@@ -14,10 +14,9 @@ export interface RenderRect {
     Width: number;
     Height: number;
     Color: string;
-    Alpha: number;
 }
 
-export function render_rect(Width: number, Height: number, Color: string, Alpha = 1) {
+export function render_rect(Width: number, Height: number, Color: string) {
     return (game: Game, EntityId: Entity) => {
         game.World[EntityId] |= Get.Render;
         game[Get.Render][EntityId] = <RenderRect>{
@@ -26,7 +25,6 @@ export function render_rect(Width: number, Height: number, Color: string, Alpha 
             Width,
             Height,
             Color,
-            Alpha,
         };
     };
 }
@@ -39,7 +37,7 @@ export interface RenderCircle {
     Alpha: number;
 }
 
-export function render_circle(Radius: number, Color: string, Alpha = 1) {
+export function render_circle(Radius: number, Color: string) {
     return (game: Game, EntityId: Entity) => {
         game.World[EntityId] |= Get.Render;
         game[Get.Render][EntityId] = <RenderCircle>{
@@ -47,7 +45,6 @@ export function render_circle(Radius: number, Color: string, Alpha = 1) {
             Kind: RenderKind.Circle,
             Radius,
             Color,
-            Alpha,
         };
     };
 }

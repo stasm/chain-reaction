@@ -9,7 +9,7 @@ export function create_ball(game: Game, x: number, y: number) {
     return <Blueprint>{
         Translation: [x, y],
         Using: [
-            render_circle(10, `hsl(${integer(0, 359)}, 90%, 60%)`, 0.5),
+            render_circle(10, `hsla(${integer(0, 359)}, 90%, 60%, 0.5)`),
             move(float(0, 2 * Math.PI), 200),
             collide(10),
         ],
