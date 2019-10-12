@@ -8,6 +8,6 @@ import {Blueprint} from "./blu_common.js";
 export function create_explosion(game: Game, x: number, y: number) {
     return <Blueprint>{
         Translation: [x, y],
-        Using: [render_circle(5, `hsl(${integer(0, 359)}, 90%, 60%)`, 0.5), grow(20), lifespan(7)],
+        Using: [render_circle(5, `hsl(${integer(0, 359)}, 90%, 60%)`, 0.5), grow(10), lifespan(3)],
     };
 }
