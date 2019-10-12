@@ -8,6 +8,9 @@ const QUERY = Get.Transform | Get.Render;
 export function sys_render(game: Game, delta: number) {
     game.Context.resetTransform();
     game.Context.clearRect(0, 0, game.Canvas.width, game.Canvas.height);
+    game.Context.globalAlpha = 1;
+    game.Context.fillStyle = "#000";
+    game.Context.fillRect(0, 0, game.Canvas.width, game.Canvas.height);
 
     for (let i = 0; i < game.World.length; i++) {
         if ((game.World[i] & QUERY) === QUERY) {
