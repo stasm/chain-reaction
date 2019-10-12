@@ -1,7 +1,6 @@
 import {Collide} from "../components/com_collide.js";
 import {Get} from "../components/com_index.js";
 import {Game} from "../game.js";
-import {get_translation} from "../math/mat2d.js";
 import {distance} from "../math/vec2.js";
 
 const QUERY = Get.Transform | Get.Collide;
@@ -15,7 +14,7 @@ export function sys_collide(game: Game, delta: number) {
             let collider = game[Get.Collide][i];
 
             collider.Collisions = [];
-            get_translation(collider.Center, transform.World);
+            collider.Center = [transform.Translation[0], transform.Translation[1]];
             colliders.push(collider);
         }
     }

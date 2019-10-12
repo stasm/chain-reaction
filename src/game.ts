@@ -135,29 +135,16 @@ export class Game implements ComponentData, GameState {
         cancelAnimationFrame(this.RAF);
     }
 
-    Add({Translation, Rotation, Scale, Using = [], Children = []}: Blueprint) {
+    Add({Translation, Using = []}: Blueprint) {
         let entity = this.CreateEntity();
-        transform(Translation, Rotation, Scale)(this, entity);
+        transform(Translation)(this, entity);
         for (let mixin of Using) {
             mixin(this, entity);
-        }
-        let entity_transform = this[Get.Transform][entity];
-        for (let subtree of Children) {
-            let child = this.Add(subtree);
-            let child_transform = this[Get.Transform][child];
-            child_transform.Parent = entity_transform;
-            entity_transform.Children.push(child_transform);
         }
         return entity;
     }
 
     Destroy(entity: Entity) {
-        let mask = this.World[entity];
-        if (mask & (1 << Get.Transform)) {
-            for (let child of this[Get.Transform][entity].Children) {
-                this.Destroy(child.EntityId);
-            }
-        }
         this.World[entity] = 0;
     }
 }
