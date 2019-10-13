@@ -1,3 +1,4 @@
+import {CollideKind} from "../components/com_collide.js";
 import {grow} from "../components/com_grow.js";
 import {Get, Has} from "../components/com_index.js";
 import {lifespan} from "../components/com_lifespan.js";
@@ -26,12 +27,11 @@ function update(game: Game, entity: Entity, delta: number) {
     }
 
     let collide = game[Get.Collide][entity];
-    for (let i = 0; i < collide.Collisions.length; i++) {
-        let other = collide.Collisions[i].EntityId;
-        if (game.World[other] & Has.Grow) {
-            game.World[entity] &= ~Has.Move;
-            grow(40)(game, entity);
-            lifespan(3)(game, entity);
-        }
+    if (collide.Collisions.length > 0) {
+        // Transform the ball into an explosion.
+        game.World[entity] &= ~Has.Move;
+        game[Get.Collide][entity].Kind = CollideKind.Explosion;
+        grow(40)(game, entity);
+        lifespan(3)(game, entity);
     }
 }
