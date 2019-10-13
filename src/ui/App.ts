@@ -1,15 +1,11 @@
 import {GameState} from "../actions.js";
-import {html} from "./html.js";
+import {Title} from "./Title.js";
 
-export function App(state: GameState) {
-    return html`
-        <div
-            style="
-                position: absolute;
-                top: 0;
-                background-color: #000;
-                color: #fff;
-            "
-        ></div>
-    `;
+export function App(state: GameState): string {
+    switch (state.CurrentScene) {
+        case "title":
+            return Title();
+        default:
+            return "";
+    }
 }

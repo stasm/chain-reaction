@@ -17,6 +17,7 @@ import {sys_move} from "./systems/sys_move.js";
 import {sys_performance} from "./systems/sys_performance.js";
 import {sys_render} from "./systems/sys_render.js";
 import {sys_transform} from "./systems/sys_transform.js";
+import {sys_ui} from "./systems/sys_ui.js";
 
 const MAX_ENTITIES = 10000;
 
@@ -46,8 +47,12 @@ export class Game implements ComponentData, GameState {
     public [Get.Render]: Array<Render> = [];
     public [Get.Transform]: Array<Transform> = [];
 
+    // Implement GameState
+    public CurrentScene = "title";
+
     public Canvas: HTMLCanvasElement;
     public Context: CanvasRenderingContext2D;
+    public UI: HTMLElement;
     public InputState: InputState = {mouse_x: 0, mouse_y: 0};
     public InputEvent: InputEvent = {mouse_x: 0, mouse_y: 0, wheel_y: 0};
 
@@ -62,16 +67,17 @@ export class Game implements ComponentData, GameState {
         this.Canvas.width = window.innerWidth;
         this.Canvas.height = window.innerHeight;
 
-        this.Canvas.addEventListener("contextmenu", evt => evt.preventDefault());
-        this.Canvas.addEventListener("mousedown", evt => {
+        this.UI = document.querySelector("main")!;
+        this.UI.addEventListener("contextmenu", evt => evt.preventDefault());
+        this.UI.addEventListener("mousedown", evt => {
             this.InputState[`mouse_${evt.button}`] = 1;
             this.InputEvent[`mouse_${evt.button}_down`] = 1;
         });
-        this.Canvas.addEventListener("mouseup", evt => {
+        this.UI.addEventListener("mouseup", evt => {
             this.InputState[`mouse_${evt.button}`] = 0;
             this.InputEvent[`mouse_${evt.button}_up`] = 1;
         });
-        this.Canvas.addEventListener("mousemove", evt => {
+        this.UI.addEventListener("mousemove", evt => {
             this.InputState.mouse_x = evt.offsetX;
             this.InputState.mouse_y = evt.offsetY;
         });
@@ -100,6 +106,7 @@ export class Game implements ComponentData, GameState {
         sys_grow(this, delta);
         sys_collide(this, delta);
         sys_render(this, delta);
+        sys_ui(this, delta);
 
         // Performance.
         sys_performance(this, performance.now() - now, document.querySelector("#frame"));
