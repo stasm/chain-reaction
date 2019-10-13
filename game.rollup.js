@@ -19,7 +19,7 @@
     function transform(Translation = [0, 0]) {
         return (game, EntityId) => {
             game.World[EntityId] |= 32 /* Transform */;
-            game[32 /* Transform */][EntityId] = {
+            game[5 /* Transform */][EntityId] = {
                 EntityId,
                 World: create(),
                 Translation,
@@ -37,37 +37,42 @@
     const QUERY = 32 /* Transform */ | 1 /* Collide */;
     function sys_collide(game, delta) {
         // Collect all colliders.
-        let colliders = [];
+        let balls = [];
+        let explosions = [];
         for (let i = 0; i < game.World.length; i++) {
             if ((game.World[i] & QUERY) === QUERY) {
-                let transform = game[32 /* Transform */][i];
-                let collider = game[1 /* Collide */][i];
-                collider.Collisions = [];
-                collider.Center = [transform.Translation[0], transform.Translation[1]];
-                colliders.push(collider);
+                let transform = game[5 /* Transform */][i];
+                let collider = game[0 /* Collide */][i];
+                collider.Collision = false;
+                collider.Center[0] = transform.Translation[0];
+                collider.Center[1] = transform.Translation[1];
+                switch (collider.Kind) {
+                    case 0 /* Ball */:
+                        balls.push(collider);
+                        break;
+                    case 1 /* Explosion */:
+                        explosions.push(collider);
+                        break;
+                }
             }
         }
-        // Check collisions, once for each pair of colliders.
-        for (let i = 0; i < colliders.length; i++) {
-            check_collisions(colliders[i], colliders, i);
+        for (let i = 0; i < explosions.length; i++) {
+            check_collisions(explosions[i], balls);
         }
     }
     /**
-     * Check for collisions between a given collider and all other colliders. We
-     * only need to check a pair of colliders once. Varying length allows to skip
-     * half of the NxN checks matrix.
+     * Check for collisions between a given collider and other colliders.
      *
      * @param game The game instance.
      * @param collider The current collider.
      * @param colliders Other colliders to test against.
-     * @param length How many colliders to check.
      */
-    function check_collisions(collider, colliders, length) {
-        for (let i = 0; i < length; i++) {
+    function check_collisions(collider, colliders) {
+        for (let i = 0; i < colliders.length; i++) {
             let other = colliders[i];
             if (circles_intersect(collider, other)) {
-                collider.Collisions.push(other);
-                other.Collisions.push(collider);
+                collider.Collision = true;
+                other.Collision = true;
             }
         }
     }
@@ -78,7 +83,7 @@
     function grow(Speed) {
         return (game, entity) => {
             game.World[entity] |= 2 /* Grow */;
-            game[2 /* Grow */][entity] = {
+            game[1 /* Grow */][entity] = {
                 Speed,
             };
         };
@@ -87,7 +92,7 @@
     function lifespan(Max = Infinity) {
         return (game, entity) => {
             game.World[entity] |= 4 /* Lifespan */;
-            game[4 /* Lifespan */][entity] = {
+            game[2 /* Lifespan */][entity] = {
                 Max,
                 Age: 0,
             };
@@ -103,31 +108,31 @@
         }
     }
     function update(game, entity, delta) {
-        let transform = game[32 /* Transform */][entity];
-        let move = game[8 /* Move */][entity];
+        let transform = game[5 /* Transform */][entity];
+        let move = game[3 /* Move */][entity];
         if (transform.Translation[0] < 0 || transform.Translation[0] > game.Canvas.width) {
             move.Direction[0] = -move.Direction[0];
         }
         if (transform.Translation[1] < 0 || transform.Translation[1] > game.Canvas.height) {
             move.Direction[1] = -move.Direction[1];
         }
-        let collide = game[1 /* Collide */][entity];
-        for (let i = 0; i < collide.Collisions.length; i++) {
-            let other = collide.Collisions[i].EntityId;
-            if (game.World[other] & 2 /* Grow */) {
-                game.World[entity] &= ~8 /* Move */;
-                grow(40)(game, entity);
-                lifespan(3)(game, entity);
-            }
+        let collide = game[0 /* Collide */][entity];
+        if (collide.Collision) {
+            // Transform the ball into an explosion.
+            game.World[entity] &= ~8 /* Move */;
+            game[0 /* Collide */][entity].Kind = 1 /* Explosion */;
+            grow(40)(game, entity);
+            lifespan(3)(game, entity);
         }
     }
 
-    function collide(Radius) {
+    function collide(Radius, Kind) {
         return (game, EntityId) => {
             game.World[EntityId] |= 1 /* Collide */;
-            game[1 /* Collide */][EntityId] = {
+            game[0 /* Collide */][EntityId] = {
                 EntityId,
-                Collisions: [],
+                Kind,
+                Collision: false,
                 Center: [0, 0],
                 Radius,
             };
@@ -137,7 +142,7 @@
     function render_circle(Radius, Color) {
         return (game, EntityId) => {
             game.World[EntityId] |= 16 /* Render */;
-            game[16 /* Render */][EntityId] = {
+            game[4 /* Render */][EntityId] = {
                 EntityId,
                 Radius,
                 Color,
@@ -157,7 +162,7 @@
             Translation: [x, y],
             Using: [
                 render_circle(5, `hsla(${integer(0, 359)}, 90%, 60%, 0.5)`),
-                collide(5),
+                collide(5, 1 /* Explosion */),
                 grow(40),
                 lifespan(3),
             ],
@@ -190,10 +195,10 @@
         }
     }
     function update$1(game, entity, delta) {
-        let grow = game[2 /* Grow */][entity];
-        let render = game[16 /* Render */][entity];
+        let grow = game[1 /* Grow */][entity];
+        let render = game[4 /* Render */][entity];
         render.Radius += grow.Speed * delta;
-        let collide = game[1 /* Collide */][entity];
+        let collide = game[0 /* Collide */][entity];
         collide.Radius += grow.Speed * delta;
     }
 
@@ -206,7 +211,7 @@
         }
     }
     function update$2(game, entity, delta) {
-        let lifespan = game[4 /* Lifespan */][entity];
+        let lifespan = game[2 /* Lifespan */][entity];
         lifespan.Age += delta;
         if (lifespan.Age > lifespan.Max) {
             game.Destroy(entity);
@@ -222,8 +227,8 @@
         }
     }
     function update$3(game, entity, delta) {
-        let transform = game[32 /* Transform */][entity];
-        let move = game[8 /* Move */][entity];
+        let transform = game[5 /* Transform */][entity];
+        let move = game[3 /* Move */][entity];
         transform.Translation[0] += move.Direction[0] * move.Speed * delta;
         transform.Translation[1] += move.Direction[1] * move.Speed * delta;
         transform.Dirty = true;
@@ -243,8 +248,8 @@
         game.Context.fillRect(0, 0, game.Canvas.width, game.Canvas.height);
         for (let i = 0; i < game.World.length; i++) {
             if ((game.World[i] & QUERY$5) === QUERY$5) {
-                let transform = game[32 /* Transform */][i];
-                let render = game[16 /* Render */][i];
+                let transform = game[5 /* Transform */][i];
+                let render = game[4 /* Render */][i];
                 draw_circle(game, transform, render);
             }
         }
@@ -262,7 +267,7 @@
     function sys_transform(game, delta) {
         for (let i = 0; i < game.World.length; i++) {
             if ((game.World[i] & QUERY$6) === QUERY$6) {
-                update$4(game[32 /* Transform */][i]);
+                update$4(game[5 /* Transform */][i]);
             }
         }
     }
@@ -292,8 +297,6 @@
             this.Canvas = document.querySelector("canvas");
             this.Canvas.width = window.innerWidth;
             this.Canvas.height = window.innerHeight;
-            window.addEventListener("keydown", evt => (this.InputState[evt.code] = 1));
-            window.addEventListener("keyup", evt => (this.InputState[evt.code] = 0));
             this.Canvas.addEventListener("contextmenu", evt => evt.preventDefault());
             this.Canvas.addEventListener("mousedown", evt => {
                 this.InputState[`mouse_${evt.button}`] = 1;
@@ -306,11 +309,6 @@
             this.Canvas.addEventListener("mousemove", evt => {
                 this.InputState.mouse_x = evt.offsetX;
                 this.InputState.mouse_y = evt.offsetY;
-                this.InputEvent.mouse_x = evt.movementX;
-                this.InputEvent.mouse_y = evt.movementY;
-            });
-            this.Canvas.addEventListener("wheel", evt => {
-                this.InputEvent.wheel_y = evt.deltaY;
             });
             this.Context = this.Canvas.getContext("2d");
         }
@@ -366,12 +364,12 @@
             this.World[entity] = 0;
         }
     }
-    _a = 1 /* Collide */, _b = 2 /* Grow */, _c = 4 /* Lifespan */, _d = 8 /* Move */, _e = 16 /* Render */, _f = 32 /* Transform */;
+    _a = 0 /* Collide */, _b = 1 /* Grow */, _c = 2 /* Lifespan */, _d = 3 /* Move */, _e = 4 /* Render */, _f = 5 /* Transform */;
 
     function move(angle, Speed) {
         return (game, entity) => {
             game.World[entity] |= 8 /* Move */;
-            game[8 /* Move */][entity] = {
+            game[3 /* Move */][entity] = {
                 Direction: [Math.cos(angle), Math.sin(angle)],
                 Speed,
             };
@@ -384,20 +382,20 @@
             Using: [
                 render_circle(10, `hsla(${integer(0, 359)}, 90%, 60%, 0.5)`),
                 move(float(0, 2 * Math.PI), 200),
-                collide(10),
+                collide(10, 0 /* Ball */),
             ],
         };
     }
 
-    function world_stage(game) {
+    function world_stage(game, ball_count) {
         game.World = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < ball_count; i++) {
             game.Add(create_ball(game, integer(1, game.Canvas.width - 1), integer(1, game.Canvas.height - 1)));
         }
     }
 
     let game = new Game();
-    world_stage(game);
+    world_stage(game, 1000);
     game.Start();
     // @ts-ignore
     window.$ = (...args) => dispatch();
