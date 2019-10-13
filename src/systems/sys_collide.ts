@@ -14,7 +14,7 @@ export function sys_collide(game: Game, delta: number) {
             let transform = game[Get.Transform][i];
             let collider = game[Get.Collide][i];
 
-            collider.Collisions = [];
+            collider.Collision = false;
             collider.Center[0] = transform.Translation[0];
             collider.Center[1] = transform.Translation[1];
 
@@ -45,8 +45,8 @@ function check_collisions(collider: Collide, colliders: Array<Collide>) {
     for (let i = 0; i < colliders.length; i++) {
         let other = colliders[i];
         if (circles_intersect(collider, other)) {
-            collider.Collisions.push(other);
-            other.Collisions.push(collider);
+            collider.Collision = true;
+            other.Collision = true;
         }
     }
 }

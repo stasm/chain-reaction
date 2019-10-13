@@ -5,7 +5,7 @@ import {Get, Has} from "./com_index.js";
 export interface Collide {
     readonly EntityId: Entity;
     Kind: CollideKind;
-    Collisions: Array<Collide>;
+    Collision: boolean;
     Center: Vec2;
     Radius: number;
 }
@@ -21,7 +21,7 @@ export function collide(Radius: number, Kind: CollideKind) {
         game[Get.Collide][EntityId] = <Collide>{
             EntityId,
             Kind,
-            Collisions: [],
+            Collision: false,
             Center: [0, 0],
             Radius,
         };

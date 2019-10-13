@@ -27,7 +27,7 @@ function update(game: Game, entity: Entity, delta: number) {
     }
 
     let collide = game[Get.Collide][entity];
-    if (collide.Collisions.length > 0) {
+    if (collide.Collision) {
         // Transform the ball into an explosion.
         game.World[entity] &= ~Has.Move;
         game[Get.Collide][entity].Kind = CollideKind.Explosion;
