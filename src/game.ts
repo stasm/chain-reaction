@@ -62,8 +62,6 @@ export class Game implements ComponentData, GameState {
         this.Canvas.width = window.innerWidth;
         this.Canvas.height = window.innerHeight;
 
-        window.addEventListener("keydown", evt => (this.InputState[evt.code] = 1));
-        window.addEventListener("keyup", evt => (this.InputState[evt.code] = 0));
         this.Canvas.addEventListener("contextmenu", evt => evt.preventDefault());
         this.Canvas.addEventListener("mousedown", evt => {
             this.InputState[`mouse_${evt.button}`] = 1;
@@ -76,11 +74,6 @@ export class Game implements ComponentData, GameState {
         this.Canvas.addEventListener("mousemove", evt => {
             this.InputState.mouse_x = evt.offsetX;
             this.InputState.mouse_y = evt.offsetY;
-            this.InputEvent.mouse_x = evt.movementX;
-            this.InputEvent.mouse_y = evt.movementY;
-        });
-        this.Canvas.addEventListener("wheel", evt => {
-            this.InputEvent.wheel_y = evt.deltaY;
         });
 
         this.Context = this.Canvas.getContext("2d")!;
