@@ -15,7 +15,8 @@ export function sys_collide(game: Game, delta: number) {
             let collider = game[Get.Collide][i];
 
             collider.Collisions = [];
-            collider.Center = [transform.Translation[0], transform.Translation[1]];
+            collider.Center[0] = transform.Translation[0];
+            collider.Center[1] = transform.Translation[1];
 
             switch (collider.Kind) {
                 case CollideKind.Ball:
