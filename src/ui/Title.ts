@@ -7,13 +7,13 @@ export function Title() {
             <span>Chain</span><br><span>Reaction</span>
         </div>
         <div style="margin-top: 10vh; font: 10vmin sans-serif;">
-            <button onclick="$(${Action.GoToPlay}, [10])">
+            <button style="margin-right: 1vmin" onclick="$(${Action.GoToPlay}, [10])">
                 <span>Play Now</span>
             </button>
-            <button onclick="$(${Action.GoToPlay}, [100])">
+            <button style="margin-right: 1vmin" onclick="$(${Action.GoToPlay}, [100])">
                 <span>One Hundred<span>
             </button>
-            <button onclick="$(${Action.GoToPlay}, [1000])">
+            <button style="margin-right: 1vmin" onclick="$(${Action.GoToPlay}, [1000])">
                 <span>One Thousand</span>
             </button>
         </div>
