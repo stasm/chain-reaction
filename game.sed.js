@@ -1,7 +1,75 @@
 (function () {
 
 
-function dispatch(game, action, args) { }
+function collide(Radius, Kind) {
+return (game, EntityId) => {
+game.World[EntityId] |= 1 /* Collide */;
+game[0 /* Collide */][EntityId] = {
+EntityId,
+Kind,
+Collision: false,
+Center: [0, 0],
+Radius,
+};
+};
+}
+
+function move(angle, Speed) {
+return (game, entity) => {
+game.World[entity] |= 8 /* Move */;
+game[3 /* Move */][entity] = {
+Direction: [Math.cos(angle), Math.sin(angle)],
+Speed,
+};
+};
+}
+
+function render_circle(Radius, Color) {
+return (game, EntityId) => {
+game.World[EntityId] |= 16 /* Render */;
+game[4 /* Render */][EntityId] = {
+EntityId,
+Radius,
+Color,
+};
+};
+}
+
+function integer(min = 0, max = 1) {
+return Math.floor(Math.random() * (max - min + 1) + min);
+}
+function float(min = 0, max = 1) {
+return Math.random() * (max - min) + min;
+}
+
+function create_ball(game, x, y) {
+return {
+Translation: [x, y],
+Using: [
+render_circle(10, `hsla(${integer(0, 359)}, 90%, 60%, 0.5)`),
+move(float(0, 2 * Math.PI), 200),
+collide(10, 0 /* Ball */),
+],
+};
+}
+
+function world_stage(game, ball_count) {
+game.World = [];
+for (let i = 0; i < ball_count; i++) {
+game.Add(create_ball(game, integer(1, game.Canvas.width - 1), integer(1, game.Canvas.height - 1)));
+}
+}
+
+function dispatch(game, action, args) {
+switch (action) {
+case 1 /* GoToPlay */:
+game.CurrentScene = "play";
+let ball_count = args[0];
+console.log(ball_count);
+requestAnimationFrame(() => world_stage(game, ball_count));
+break;
+}
+}
 
 function create() {
 return [1, 0, 0, 1, 0, 0];
@@ -126,37 +194,6 @@ lifespan(3)(game, entity);
 }
 }
 
-function collide(Radius, Kind) {
-return (game, EntityId) => {
-game.World[EntityId] |= 1 /* Collide */;
-game[0 /* Collide */][EntityId] = {
-EntityId,
-Kind,
-Collision: false,
-Center: [0, 0],
-Radius,
-};
-};
-}
-
-function render_circle(Radius, Color) {
-return (game, EntityId) => {
-game.World[EntityId] |= 16 /* Render */;
-game[4 /* Render */][EntityId] = {
-EntityId,
-Radius,
-Color,
-};
-};
-}
-
-function integer(min = 0, max = 1) {
-return Math.floor(Math.random() * (max - min + 1) + min);
-}
-function float(min = 0, max = 1) {
-return Math.random() * (max - min) + min;
-}
-
 function create_explosion(game, x, y) {
 return {
 Translation: [x, y],
@@ -170,7 +207,7 @@ lifespan(3),
 }
 
 function sys_control_placement(game, delta) {
-if (game.InputEvent.mouse_0_up) {
+if (game.CurrentScene === "play" && game.InputEvent.mouse_0_up) {
 game.Add(create_explosion(game, game.InputState.mouse_x, game.InputState.mouse_y));
 }
 }
@@ -278,6 +315,63 @@ from_translation(transform.World, transform.Translation);
 }
 }
 
+function shift(values) {
+let value = values.shift();
+if (value === false || value === undefined) {
+return "";
+}
+else if (Array.isArray(value)) {
+return value.join("");
+}
+else {
+return value;
+}
+}
+function html(strings, ...values) {
+return strings.reduce((out, cur) => out + shift(values) + cur);
+}
+
+function Title() {
+return html `
+<div style="margin-top: 10vh; font: 20vmin sans-serif;">
+<div style="margin-top: 1px">
+<span>Chain</span>
+</div>
+<div style="margin-top: 1px">
+<span>Reaction</span>
+</div>
+</div>
+<div style="margin-top: 10vh; font: 20vmin sans-serif;">
+<div style="margin-top: 3px">
+<button onclick="$(${1 /* GoToPlay */}, [10])">10</button><br />
+</div>
+<div style="margin-top: 3px">
+<button onclick="$(${1 /* GoToPlay */}, [100])">100</button><br />
+</div>
+<div style="margin-top: 3px">
+<button onclick="$(${1 /* GoToPlay */}, [1000])">1000</button><br />
+</div>
+</div>
+`;
+}
+
+function App(state) {
+switch (state.CurrentScene) {
+case "title":
+return Title();
+default:
+return "";
+}
+}
+
+let prev;
+function sys_ui(game, delta) {
+let next = App(game);
+if (next !== prev) {
+game.UI.innerHTML = prev = next;
+}
+}
+
 var _a, _b, _c, _d, _e, _f;
 const MAX_ENTITIES = 10000;
 class Game {
@@ -290,6 +384,8 @@ this[_c] = [];
 this[_d] = [];
 this[_e] = [];
 this[_f] = [];
+
+this.CurrentScene = "title";
 this.InputState = { mouse_x: 0, mouse_y: 0 };
 this.InputEvent = { mouse_x: 0, mouse_y: 0, wheel_y: 0 };
 this.RAF = 0;
@@ -297,16 +393,17 @@ document.addEventListener("visibilitychange", () => document.hidden ? this.Stop(
 this.Canvas = document.querySelector("canvas");
 this.Canvas.width = window.innerWidth;
 this.Canvas.height = window.innerHeight;
-this.Canvas.addEventListener("contextmenu", evt => evt.preventDefault());
-this.Canvas.addEventListener("mousedown", evt => {
+this.UI = document.querySelector("main");
+this.UI.addEventListener("contextmenu", evt => evt.preventDefault());
+this.UI.addEventListener("mousedown", evt => {
 this.InputState[`mouse_${evt.button}`] = 1;
 this.InputEvent[`mouse_${evt.button}_down`] = 1;
 });
-this.Canvas.addEventListener("mouseup", evt => {
+this.UI.addEventListener("mouseup", evt => {
 this.InputState[`mouse_${evt.button}`] = 0;
 this.InputEvent[`mouse_${evt.button}_up`] = 1;
 });
-this.Canvas.addEventListener("mousemove", evt => {
+this.UI.addEventListener("mousemove", evt => {
 this.InputState.mouse_x = evt.offsetX;
 this.InputState.mouse_y = evt.offsetY;
 });
@@ -331,6 +428,7 @@ sys_transform(this);
 sys_grow(this, delta);
 sys_collide(this);
 sys_render(this);
+sys_ui(this);
 
 sys_performance(this, performance.now() - now, document.querySelector("#frame"));
 sys_framerate(this, delta);
@@ -366,39 +464,11 @@ this.World[entity] = 0;
 }
 _a = 0 /* Collide */, _b = 1 /* Grow */, _c = 2 /* Lifespan */, _d = 3 /* Move */, _e = 4 /* Render */, _f = 5 /* Transform */;
 
-function move(angle, Speed) {
-return (game, entity) => {
-game.World[entity] |= 8 /* Move */;
-game[3 /* Move */][entity] = {
-Direction: [Math.cos(angle), Math.sin(angle)],
-Speed,
-};
-};
-}
-
-function create_ball(game, x, y) {
-return {
-Translation: [x, y],
-Using: [
-render_circle(10, `hsla(${integer(0, 359)}, 90%, 60%, 0.5)`),
-move(float(0, 2 * Math.PI), 200),
-collide(10, 0 /* Ball */),
-],
-};
-}
-
-function world_stage(game, ball_count) {
-game.World = [];
-for (let i = 0; i < ball_count; i++) {
-game.Add(create_ball(game, integer(1, game.Canvas.width - 1), integer(1, game.Canvas.height - 1)));
-}
-}
-
 let game = new Game();
-world_stage(game, 1000);
+world_stage(game, 10);
 game.Start();
 
-window.$ = (...args) => dispatch();
+window.$ = (...args) => dispatch(game, ...args);
 
 window.game = game;
 
