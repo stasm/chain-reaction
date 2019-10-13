@@ -334,23 +334,18 @@ return strings.reduce((out, cur) => out + shift(values) + cur);
 function Title() {
 return html `
 <div style="margin-top: 10vh; font: 20vmin sans-serif;">
-<div style="margin-top: 1px">
-<span>Chain</span>
+<span>Chain</span><br><span>Reaction</span>
 </div>
-<div style="margin-top: 1px">
-<span>Reaction</span>
-</div>
-</div>
-<div style="margin-top: 10vh; font: 20vmin sans-serif;">
-<div style="margin-top: 3px">
-<button onclick="$(${1 /* GoToPlay */}, [10])">10</button><br />
-</div>
-<div style="margin-top: 3px">
-<button onclick="$(${1 /* GoToPlay */}, [100])">100</button><br />
-</div>
-<div style="margin-top: 3px">
-<button onclick="$(${1 /* GoToPlay */}, [1000])">1000</button><br />
-</div>
+<div style="margin-top: 10vh; font: 10vmin sans-serif;">
+<button onclick="$(${1 /* GoToPlay */}, [10])">
+<span>Play Now</span>
+</button>
+<button onclick="$(${1 /* GoToPlay */}, [100])">
+<span>One Hundred<span>
+</button>
+<button onclick="$(${1 /* GoToPlay */}, [1000])">
+<span>One Thousand</span>
+</button>
 </div>
 `;
 }
