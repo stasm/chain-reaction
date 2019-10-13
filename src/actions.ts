@@ -6,14 +6,16 @@ export interface GameState {
 }
 
 export const enum Action {
-    ChangeScene,
+    GoToPlay = 1,
 }
 
 export function dispatch(game: Game, action: Action, args: Array<unknown>) {
     switch (action) {
-        case Action.ChangeScene:
+        case Action.GoToPlay:
             game.CurrentScene = "play";
-            requestAnimationFrame(() => world_stage(game, 100));
+            let ball_count = args[0] as number;
+            console.log(ball_count);
+            requestAnimationFrame(() => world_stage(game, ball_count));
             break;
     }
 }
