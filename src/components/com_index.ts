@@ -6,12 +6,21 @@ import {Render} from "./com_render";
 import {Transform} from "./com_transform";
 
 export const enum Get {
-    Collide = 1,
-    Grow = 2,
-    Lifespan = 4,
-    Move = 8,
-    Render = 16,
-    Transform = 32,
+    Collide,
+    Grow,
+    Lifespan,
+    Move,
+    Render,
+    Transform,
+}
+
+export const enum Has {
+    Collide = 1 << Get.Collide,
+    Grow = 1 << Get.Grow,
+    Lifespan = 1 << Get.Lifespan,
+    Move = 1 << Get.Move,
+    Render = 1 << Get.Render,
+    Transform = 1 << Get.Transform,
 }
 
 export interface ComponentData {

@@ -1,9 +1,9 @@
-import {Get} from "../components/com_index.js";
+import {Get, Has} from "../components/com_index.js";
 import {Transform} from "../components/com_transform.js";
 import {Game} from "../game.js";
 import {from_translation} from "../math/mat2d.js";
 
-const QUERY = Get.Transform;
+const QUERY = Has.Transform;
 
 export function sys_transform(game: Game, delta: number) {
     for (let i = 0; i < game.World.length; i++) {

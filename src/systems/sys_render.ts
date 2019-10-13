@@ -1,9 +1,9 @@
-import {Get} from "../components/com_index.js";
+import {Get, Has} from "../components/com_index.js";
 import {Render} from "../components/com_render.js";
 import {Transform} from "../components/com_transform.js";
 import {Game} from "../game.js";
 
-const QUERY = Get.Transform | Get.Render;
+const QUERY = Has.Transform | Has.Render;
 
 export function sys_render(game: Game, delta: number) {
     game.Context.resetTransform();

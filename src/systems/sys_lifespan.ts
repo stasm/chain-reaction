@@ -1,7 +1,7 @@
-import {Get} from "../components/com_index.js";
+import {Get, Has} from "../components/com_index.js";
 import {Entity, Game} from "../game.js";
 
-const QUERY = Get.Transform | Get.Lifespan;
+const QUERY = Has.Transform | Has.Lifespan;
 
 export function sys_lifespan(game: Game, delta: number) {
     for (let i = 0; i < game.World.length; i++) {

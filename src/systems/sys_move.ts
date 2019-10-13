@@ -1,7 +1,7 @@
-import {Get} from "../components/com_index.js";
+import {Get, Has} from "../components/com_index.js";
 import {Entity, Game} from "../game.js";
 
-const QUERY = Get.Transform | Get.Move;
+const QUERY = Has.Transform | Has.Move;
 
 export function sys_move(game: Game, delta: number) {
     for (let i = 0; i < game.World.length; i++) {

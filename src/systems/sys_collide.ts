@@ -1,9 +1,9 @@
 import {Collide} from "../components/com_collide.js";
-import {Get} from "../components/com_index.js";
+import {Get, Has} from "../components/com_index.js";
 import {Game} from "../game.js";
 import {distance} from "../math/vec2.js";
 
-const QUERY = Get.Transform | Get.Collide;
+const QUERY = Has.Transform | Has.Collide;
 
 export function sys_collide(game: Game, delta: number) {
     // Collect all colliders.

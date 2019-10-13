@@ -1,7 +1,7 @@
-import {Get} from "../components/com_index.js";
+import {Get, Has} from "../components/com_index.js";
 import {Entity, Game} from "../game.js";
 
-const QUERY = Get.Transform | Get.Grow | Get.Render | Get.Collide;
+const QUERY = Has.Transform | Has.Grow | Has.Render | Has.Collide;
 
 export function sys_grow(game: Game, delta: number) {
     for (let i = 0; i < game.World.length; i++) {
